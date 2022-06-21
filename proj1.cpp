@@ -49,12 +49,14 @@
 // We strongly suggest sitting down and designing this program on paper before writing the code. Everything you need is in the book. Menus are probably best accomplished with switch statements. Holding year, month, and appointment data probably involved multiple arrays (even nested or "three dimensional" arrays). The input, output, and file options can all be accomplished using the basic methods you have already encountered. Breaking down the different tasks into functions is highly advised as there are many parts of this program that should be reused. Do not use global variables, but keep as many arrays in your "main" function as you need to have appointment data always available. Above all, do not overthink this program -- the functionality we are asking for is quite simple and can be built piece-by-piece. 
 
 
+#include <stdio.h>
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include <iomanip>
 #include <stdlib.h>
 #include<vector>
+#include <algorithm>
 using namespace std;
 
 int printCalendar(long calendar[100][12][42]) {
@@ -123,26 +125,42 @@ int printMonthSelectMenu(int year) {
     return 0;
 }
 
-int printCalendarMonth(int year, int month, long century[100][12][42]) {
-    int y = year; int m = month;
+int printCalendarMonth(int year, int month, long century[100][12][42], string appointments[100][12][42]) {
+    
+    int y = year;
+    int m = month;
+    string modifier = "*";
+    int target;
+    
     string monthNames[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     string weekdayNames[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
-    string modifier = "";
     
     std::system("clear");
-    cout << "\n" << monthNames[month-1] << " " << year << "\n";
+    cout << "\n" << monthNames[month] << " " << year << "\n";
     cout << "----------------------------\n";
     
     for (int weekday = 0; weekday < 7; weekday++) {
-        cout << setw(4) << weekdayNames[weekday];
+        cout << setw(6) << weekdayNames[weekday];
     }
+    
     cout << "\n";
     
     for (int day = 0; day < 42; day++) {
-        // if (appts[year-2000][month-1][day] != "XX") {
-        //     modifier = "*";
-        // }
-        cout << setw(4) << century[year-2000][month-1][day] << modifier;
+        if (appointments[year - 2000][month][day+1].empty()) {
+            modifier = " ";
+        }
+        else {
+            target = (day);
+        }
+        
+        if (century[year-2000][month][day] == target && century[year-2000][month][day] != 0) {
+            modifier = "*";
+            cout << setw(5) << century[year-2000][month-1][day] << modifier;
+        }
+        else {
+            cout << setw(5) << century[year-2000][month-1][day] << modifier;
+        }
+        
         if(day==6 || day==13 || day==20 || day==27 || day==34) {
             cout << "\n";
         }
@@ -174,6 +192,7 @@ int main()
 {
     bool runCalendarApp = true;
     long calendar[100][12][42] = {0};
+    string appointments[100][12][42];
     int startDay = 6; // Saturday 1/1/2000
     int lastDay = 33; // Friday 12/31/1999
     int numDaysInEachMonth[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
@@ -183,7 +202,6 @@ int main()
     int mainMenuChoice, monthSelectMenuChoice, monthMenuChoice;
     int apptDayInput;
     string apptInfo;
-    vector<string> vecApptInfo;
     bool isInMonthMenu = false;
     
     // Populate the calendar array
@@ -259,7 +277,7 @@ int main()
                 cin >> monthSelectMenuChoice;
                 
                 while (isInMonthMenu) {
-                    printCalendarMonth(yearInput, monthSelectMenuChoice, calendar);
+                    printCalendarMonth(yearInput, monthSelectMenuChoice-1, calendar, appointments);
             
                     printMonthMenu();
                     cin >> monthMenuChoice;
@@ -267,7 +285,7 @@ int main()
                     if (monthMenuChoice == 1) {
                         // Print month calendar
                         
-                        printCalendarMonth(yearInput, monthSelectMenuChoice, calendar);
+                        printCalendarMonth(yearInput, monthSelectMenuChoice-1, calendar, appointments);
                         
                         cout << "\n\nType a date to add an appointment: ";
                         cin >> apptDayInput;
@@ -276,8 +294,14 @@ int main()
                         cin.ignore();
                         getline (cin, apptInfo);
                         
+                        // save appt info to appointment array
+                        int y = (yearInput - 2000);
+                        int m = (monthSelectMenuChoice - 1);
+                        int d = apptDayInput;
+                        appointments[y][m][d] = apptInfo;
                         
-                       
+                        printCalendarMonth(yearInput, m, calendar, appointments);
+                        
                         isInMonthMenu = false;
                         runCalendarApp = false;
                         
