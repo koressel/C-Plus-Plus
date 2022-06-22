@@ -288,7 +288,12 @@ int main()
                         cout << "\n\nType a date to add an appointment: ";
                         cin >> apptDayInput;
                         
-                        cout << "Type any appointment information below then hit enter.\n";
+                        if (!appointments[yearInput-2000][monthSelectMenuChoice-1][apptDayInput-1].empty()) {
+                            cout << "\nAppointment Notes " << "\n---------------------\n";
+                            cout << appointments[yearInput-2000][monthSelectMenuChoice-1][apptDayInput-1] << endl;
+                        }
+                        
+                        cout << "\nType any appointment information below then hit enter.\n";
                         cin.ignore();
                         getline (cin, apptInfo);
                         
@@ -296,7 +301,7 @@ int main()
                         int y = (yearInput - 2000);
                         int m = (monthSelectMenuChoice - 1);
                         int d = apptDayInput - 1;
-                        appointments[y][m][d] = apptInfo;
+                        appointments[y][m][d] = appointments[y][m][d] + "\n" + apptInfo;
                         
                         // printCalendarMonth(yearInput, m, calendar, appointments);
                         
