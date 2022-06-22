@@ -48,7 +48,6 @@
 
 // We strongly suggest sitting down and designing this program on paper before writing the code. Everything you need is in the book. Menus are probably best accomplished with switch statements. Holding year, month, and appointment data probably involved multiple arrays (even nested or "three dimensional" arrays). The input, output, and file options can all be accomplished using the basic methods you have already encountered. Breaking down the different tasks into functions is highly advised as there are many parts of this program that should be reused. Do not use global variables, but keep as many arrays in your "main" function as you need to have appointment data always available. Above all, do not overthink this program -- the functionality we are asking for is quite simple and can be built piece-by-piece. 
 
-
 #include <stdio.h>
 #include <iostream>
 #include <stdio.h>
@@ -131,6 +130,7 @@ int printCalendarMonth(int year, int month, long century[100][12][42], string ap
     int m = month;
     string modifier = "*";
     int target;
+    int offset = 0;
     
     string monthNames[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     string weekdayNames[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -146,19 +146,17 @@ int printCalendarMonth(int year, int month, long century[100][12][42], string ap
     cout << "\n";
     
     for (int day = 0; day < 42; day++) {
-        if (appointments[year - 2000][month][day+1].empty()) {
-            modifier = " ";
+        if (century[year-2000][month -1][day] == 0) {
+            offset++;
+            cout << setw(5) << century[year-2000][month-1][day] << " ";
         }
         else {
-            target = (day);
-        }
-        
-        if (century[year-2000][month][day] == target && century[year-2000][month][day] != 0) {
-            modifier = "*";
-            cout << setw(5) << century[year-2000][month-1][day] << modifier;
-        }
-        else {
-            cout << setw(5) << century[year-2000][month-1][day] << modifier;
+            if (!appointments[year-2000][month][day-offset].empty()) {
+                cout << setw(5) << century[year-2000][month-1][day] << "*";
+            }
+            else {
+                cout << setw(5) << century[year-2000][month-1][day] << " ";
+            }
         }
         
         if(day==6 || day==13 || day==20 || day==27 || day==34) {
@@ -297,13 +295,12 @@ int main()
                         // save appt info to appointment array
                         int y = (yearInput - 2000);
                         int m = (monthSelectMenuChoice - 1);
-                        int d = apptDayInput;
+                        int d = apptDayInput - 1;
                         appointments[y][m][d] = apptInfo;
                         
-                        printCalendarMonth(yearInput, m, calendar, appointments);
+                        // printCalendarMonth(yearInput, m, calendar, appointments);
                         
-                        isInMonthMenu = false;
-                        runCalendarApp = false;
+                        isInMonthMenu = true;
                         
                     }
                     if (monthMenuChoice == 2) {
