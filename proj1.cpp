@@ -48,13 +48,12 @@
 
 // We strongly suggest sitting down and designing this program on paper before writing the code. Everything you need is in the book. Menus are probably best accomplished with switch statements. Holding year, month, and appointment data probably involved multiple arrays (even nested or "three dimensional" arrays). The input, output, and file options can all be accomplished using the basic methods you have already encountered. Breaking down the different tasks into functions is highly advised as there are many parts of this program that should be reused. Do not use global variables, but keep as many arrays in your "main" function as you need to have appointment data always available. Above all, do not overthink this program -- the functionality we are asking for is quite simple and can be built piece-by-piece. 
 
-#include <stdio.h>
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include <iomanip>
 #include <stdlib.h>
-#include<vector>
+#include <fstream>
 #include <algorithm>
 using namespace std;
 
@@ -171,8 +170,9 @@ int printMonthMenu() {
     cout << "\n\nMenu\n";
     cout << "----------------------------\n";
     cout << "(1) Create a new appointment\n";
-    cout << "(2) Back to main menu\n";
-    cout << "(3) Quit program\n\n";
+    cout << "(2) Print appointments\n";
+    cout << "(3) Back to main menu\n";
+    cout << "(4) Quit program\n\n";
     cout << "Type a number to select an option: ";
     return 0;
 }
@@ -201,6 +201,9 @@ int main()
     int apptDayInput;
     string apptInfo;
     bool isInMonthMenu = false;
+    ofstream outputFile;
+    string monthNames[12] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
     
     // Populate the calendar array
      for (int year=2000; year < 2100; year++) {
@@ -259,10 +262,9 @@ int main()
     }
     
     // Menu functionality 
-    // int yearInput;
-    // cout << "\nEnter a 4 digit year between 2000 and 2100: ";
-    // cin >> yearInput;
-    int yearInput = 2000;
+    int yearInput;
+    cout << "\nEnter a 4 digit year between 2000 and 2100: ";
+    cin >> yearInput;
     
     while (runCalendarApp) {
         printMainMenu(yearInput);
@@ -309,10 +311,32 @@ int main()
                         
                     }
                     if (monthMenuChoice == 2) {
-                        isInMonthMenu = false;
+                        cout << "\nAll appointments for this month" << endl;
+                        for (int y = 0; y < 100; y++) {
+                            for (int m = 0; m < 12; m++) {
+                                if (m == monthSelectMenuChoice-1) {
+                                    for (int d = 0; d < 42; d++) {
+                                        if (!appointments[y][m][d].empty()) {
+                                            cout << appointments[y][m][d] << endl;
+                                        }
+                                    }
+                                }
+                                
+                            }
+                        }
+                        
+                        int dummy;
+                        cout << "\nType a number then hit enter to return to the main menu. ";
+                        cin >> dummy;
+                        
+                        isInMonthMenu = true;
                         continue;
                     }
                     if (monthMenuChoice == 3) {
+                        isInMonthMenu = false;
+                        continue;
+                    }
+                    if (monthMenuChoice == 4) {
                         cout << "Quitting the program...";
                         isInMonthMenu = false;
                         runCalendarApp = false;
@@ -321,8 +345,34 @@ int main()
                 }
                 break;
             case 2: // Print appointments
+                cout << "All appointments for the year " << yearInput << endl;
+                for (int y = 0; y < 100; y++) {
+                    for (int m = 0; m < 12; m++) {
+                        for (int d = 0; d < 42; d++) {
+                            if (!appointments[y][m][d].empty()) {
+                                cout << appointments[y][m][d] << endl;
+                            }
+                        }
+                    }
+                }
+                int dummy;
+                cout << "Type a number then hit enter to return to the main menu.";
+                cin >> dummy;
                 break;
             case 3: // Write appointments to file
+                 for (int y = 0; y < 100; y++) {
+                    for (int m = 0; m < 12; m++) {
+                        string filename = monthNames[m];
+                        outputFile.open(filename + ".txt");
+                        for (int d = 0; d < 42; d++) {
+                            if (!appointments[y][m][d].empty()) {
+                                outputFile << appointments[y][m][d] << endl;
+                            }
+                        }
+                    }
+                }
+                outputFile.close();
+                
                 break;
             case 4: // Quit calendar app
                 runCalendarApp = false;
