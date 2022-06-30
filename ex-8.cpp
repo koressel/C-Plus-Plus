@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
 bool isWinnerLinear(int lNums[10], int wNums) {
